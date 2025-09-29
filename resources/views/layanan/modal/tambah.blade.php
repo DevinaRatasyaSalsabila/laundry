@@ -9,7 +9,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form class="user" action="{{ route('layananTambah') }}" method="post">
+                <form class="user" action="{{ route('layananTambah') }}" method="post" id="formLayanan">
                     @method('post')
                     @csrf
                     <div class="form-group">
@@ -36,7 +36,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
+                <button type="submit" class="btn btn-primary" id="simpanLayanan">Simpan</button>
             </div>
             </form>
         </div>

@@ -9,7 +9,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form class="user" action="{{ route('transaksiTambah') }}" method="POST">
+                <form class="user" action="{{ route('transaksiTambah') }}" id="formTransaksi" method="POST">
                     @csrf
                     @method('post')
                     <div class="row">
@@ -22,37 +22,53 @@
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="">Nama Layanan</label>
-                                <select name="id_layanan" class="form-control " id="exampleFormControlSelect1">
-                                    <option value=" ">Pilih Layanan</option>
-                                    @foreach ($layanan as $layan)
-                                        <option value="{{ $layan->id_layanan }}">{{ $layan->nama_layanan }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="">Berat</label>
-                                <input name="berat" type="number" class="form-control" id="exampleInputHarga"
-                                    placeholder="Masukkan Berat (Kg)">
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
                                 <label for="">Nama Pelanggan</label>
                                 <input name="nama_pelanggan" type="text" class="form-control"
                                     id="exampleInputNama Layanan" placeholder="Nama Pelanggan">
                             </div>
                         </div>
                     </div>
+                    <div id="layanan_multiple">
+                        <div class="row layanan-item">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="">Nama Layanan</label>
+                                    <select name="layanan[0][id_layanan]" class="form-control " id="exampleFormControlSelect1">
+                                        <option value=" ">Pilih Layanan</option>
+                                        @foreach ($layanan as $layan)
+                                            <option value="{{ $layan->id_layanan }}">{{ $layan->nama_layanan }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="">Berat</label>
+                                    <input name="layanan[0][berat]" type="number" class="form-control" id="exampleInputHarga"
+                                        placeholder="Masukkan Berat (Kg)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" id="tambah-layanan" class="btn btn-success btn-sm">+ Tambah Layanan</button>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="">Status</label>
+                                <select name="status" class="form-control " id="exampleFormControlSelect1">
+                                    <option value=" ">Pilih Status</option>
+                                    <option value="Diambil">Diambil</option>
+                                    <option value="Belum Diambil">Belum Diambil</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
+                <button type="submit" class="btn btn-primary" id="simpanTransaksi">Simpan</button>
             </div>
             </form>
         </div>

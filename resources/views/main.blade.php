@@ -77,6 +77,12 @@
                     <span>Transaksi</span>
                 </a>
             </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{{ route('laporan') }}">
+                    <i class="bi bi-clipboard-data"></i>
+                    <span>Laporan</span>
+                </a>
+            </li>
             {{-- <li class="nav-item active">
                 <a class="nav-link" href="{{ route('dashboard') }}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
@@ -222,6 +228,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Bootstrap core JavaScript-->
     <!-- Core JS -->
     <script src="{{ asset('template/vendor/jquery/jquery.min.js') }}"></script>
@@ -247,6 +254,7 @@
     <!-- Page level custom scripts -->
     <script src="{{ asset('template/js/demo/datatables-demo.js') }}"></script>
 
+    @stack('script')
 </body>
 
 </html>

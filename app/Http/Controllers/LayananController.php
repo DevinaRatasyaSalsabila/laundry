@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\LayananImport;
 use App\Models\Layanan;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LayananController extends Controller
 {
@@ -56,6 +58,19 @@ class LayananController extends Controller
 
     public function destroy(string $id)
     {
-        //
+        $layanan = Layanan::findOrFail($id)->delete();
+        return redirect()
+            ->route('layanan')
+            ->with('success', 'Data Layanan Berhasil Dihapus');
+    }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,csv,xls'
+        ]);
+
+        Excel::import(new LayananImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Data layanan berhasil diimport!');
     }
 }

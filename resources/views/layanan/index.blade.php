@@ -17,6 +17,13 @@
                     <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#layananTambah">
                         <i class="bi bi-file-earmark-plus"></i>
                     </button>
+
+                    <!-- Tombol Import -->
+                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#importModal">
+                        <i class="fa fa-download"></i>
+                        Import
+                    </button>
+
                 </div>
             </div>
             <div class="card-body">
@@ -46,20 +53,21 @@
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $item->nama_layanan }}</td>
                                     <td>{{ $item->deskripsi }}</td>
-                                    <td>{{ $item->harga_satuan }}</td>
-                                    <td>
-                                        <button type="button" class="btn btn-sm btn-warning me-1" data-toggle="modal"
-                                            data-target="#layananEdit{{$item->id_layanan}}">
+                                    <td>Rp{{ number_format($item->harga_satuan, 0, ',', '.') }}</td>
+                                    <td class="d-flex text-align-center">
+                                        <button type="button" class="btn btn-sm btn-warning m-1" data-toggle="modal"
+                                            data-target="#layananEdit{{ $item->id_layanan }}">
                                             <i class="bi bi-pen"></i>
                                         </button>
-                                        {{-- <form action="{{ route('hapusLokasi', $lok->id_lokasi) }}" method="POST"
-                                        onsubmit="return confirm('Apakah kamu yakin mau hapus data ini?')">
-                                        @csrf
-                                        @method('DELETE') --}}
-                                        <button type="#" class="btn btn-danger btn-sm">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                        {{-- </form> --}}
+                                        <form action="{{ route('layananDestroy', $item->id_layanan) }}" method="POST"
+                                            id="deleteForm{{ $item->id_layanan }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="btn btn-danger btn-sm m-1"
+                                                onclick="confirmDelete({{ $item->id_layanan }})">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 @include('layanan.modal.edit')
@@ -72,4 +80,68 @@
     </div>
 
     @include('layanan.modal.tambah')
+    @include('layanan.modal.import')
+
+    @push('script')
+        <script>
+            document.querySelectorAll('.btn-simpan-layanan').forEach(btn => {
+                btn.addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    let id = this.dataset.id; // ambil id_layanan dari data-id
+
+                    Swal.fire({
+                        title: "Apakah Kamu Yakin Ingin Menyimpan Perubahan?",
+                        showDenyButton: true,
+                        confirmButtonText: "Simpan",
+                        denyButtonText: "Batalkan Perubahan"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire("Saved!", "", "success");
+                            document.getElementById('formLayanan' + id).submit();
+                        } else if (result.isDenied) {
+                            Swal.fire("Perubahan Tidak Disimpan", "", "info");
+                        }
+                    });
+                });
+            });
+        </script>
+
+        <script>
+            function confirmDelete(id) {
+                Swal.fire({
+                    title: 'Apakah kamu yakin?',
+                    text: "Data ini akan dihapus dan tidak bisa dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Hapus',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('deleteForm' + id).submit();
+                    }
+                });
+            }
+        </script>
+        <script>
+            document.getElementById('simpanLayanan').addEventListener('click', function(event) {
+                event.preventDefault(); // stop submit form dulu
+
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Pastikan semua data sudah benar sebelum disimpan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Simpan!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('formLayanan').submit(); // submit manual
+                    }
+                });
+            });
+        </script>
+    @endpush
 @endsection

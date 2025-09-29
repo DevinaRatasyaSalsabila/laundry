@@ -1,3 +1,4 @@
+
 <!-- Modal -->
 <div class="modal fade" id="layananEdit{{ $item->id_layanan }}" tabindex="-1" aria-labelledby="exampleModalLabel"
     aria-hidden="true">
@@ -9,7 +10,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form class="user" action="{{url('layanan/update/'.$item->id_layanan)}}" method="POST">
+            <form class="user" action="{{ url('layanan/update/'.$item->id_layanan) }}" method="POST" id="formLayanan{{ $item->id_layanan }}">
                 @csrf
                 @method('POST')
                 <div class="modal-body">
@@ -35,14 +36,10 @@
                         <textarea name="deskripsi" type="text" class="form-control" id="exampleInputDeskripsi"
                             placeholder="Masukkan Deskripsi">{{ $item->deskripsi }}</textarea>
                     </div>
-
-                    {{-- <a href="index.html" class="btn btn-primary btn-user btn-block">
-                Login
-            </a> --}}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+                    <button type="button" class="btn btn-primary btn-simpan-layanan"  data-id="{{ $item->id_layanan }}" id="editLayanan{{ $item->id_layanan }}">Simpan Perubahan</button>
                 </div>
             </form>
         </div>

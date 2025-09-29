@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tb_transaksi', function (Blueprint $table) {
-            $table->id('id_transaksi');
-            $table->date('tanggal');
-            $table->string('nama_pelanggan');
-            $table->enum('status', ['Diambil', 'Belum Diambil'])->nullable();
+        Schema::create('tb_detailTransaksi', function (Blueprint $table) {
+            $table->id('id_detail');
+            $table->integer('id_transaksi');
+            $table->integer('id_layanan');
+            $table->integer('berat');
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tb_transaksi');
+        Schema::dropIfExists('tb_detailTransaksi');
     }
 };

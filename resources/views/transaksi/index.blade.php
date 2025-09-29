@@ -15,6 +15,11 @@
                     <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#transaksiTambah">
                         <i class="bi bi-file-earmark-plus"></i>
                     </button>
+                    <!-- Tombol Import -->
+                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#importModal">
+                        <i class="fa fa-download"></i>
+                        Import
+                    </button>
                 </div>
             </div>
             <div class="card-body">
@@ -24,10 +29,11 @@
                             <tr>
                                 <th>No</th>
                                 <th>Tanggal Transaksi</th>
-                                <th>Nama Layanan</th>
-                                <th>Berat</th>
+                                {{-- <th>Nama Layanan</th>
+                                <th>Berat</th> --}}
                                 <th>Total</th>
                                 <th>Nama Pelanggan</th>
+                                <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -35,38 +41,59 @@
                             <tr>
                                 <th>No</th>
                                 <th>Tanggal Transaksi</th>
-                                <th>Nama Layanan</th>
-                                <th>Berat</th>
+                                {{-- <th>Nama Layanan</th> --}}
+                                {{-- <th>Berat</th> --}}
                                 <th>Total</th>
                                 <th>Nama Pelanggan</th>
+                                <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
                         </tfoot>
                         <tbody>
+
+
                             @foreach ($transaksi as $item)
-                                @php
+                                {{-- @php
                                     $total = $item->berat;
-                                @endphp
+                                @endphp --}}
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $item->tanggal }}</td>
-                                    <td>{{ $item->nama_layanan }}</td>
-                                    <td>{{ $item->berat }}</td>
-                                    <td>{{ $total }}</td>
+                                    {{-- <td>{{ $item->nama_layanan }}</td>
+                                    <td>{{ $item->berat }}</td> --}}
+                                    <td>Rp{{ number_format($item->total, 0, ',', '.') }}</td>
                                     <td>{{ $item->nama_pelanggan }}</td>
                                     <td>
-                                        <button type="button" class="btn btn-sm btn-warning me-1" data-toggle="modal"
-                                            data-target="#transaksiEdit">
+                                        @if ($item->status == 'Diambil')
+                                            <span class="badge badge-success">
+                                                Diambil
+                                            </span>
+                                        @else
+                                            <span class="badge badge-danger">
+                                                Belum Diambil
+                                            </span>
+                                        @endif
+
+                                    </td>
+                                    <td class="d-flex text-align-center">
+                                        <button type="button" class="btn btn-sm btn-info m-1" data-toggle="modal"
+                                            data-target="#detail{{ $item->id_transaksi }}">
+                                            <i class="bi bi-clipboard"></i>
+                                        </button>
+                                        @include('transaksi.modal.detail')
+                                        <button type="button" class="btn btn-sm btn-warning m-1" data-toggle="modal"
+                                            data-target="#transaksiEdit{{ $item->id_transaksi }}">
                                             <i class="bi bi-pen"></i>
                                         </button>
-                                        {{-- <form action="{{ route('hapusLokasi', $lok->id_lokasi) }}" method="POST"
-                                        onsubmit="return confirm('Apakah kamu yakin mau hapus data ini?')">
-                                        @csrf
-                                        @method('DELETE') --}}
-                                        <button type="#" class="btn btn-danger btn-sm">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                        {{-- </form> --}}
+                                        <form action="{{ route('transaksiDestroy', $item->id_transaksi) }}" method="POST"
+                                            id="deleteTransaksi{{ $item->id_transaksi }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="btn btn-danger btn-sm m-1"
+                                                onclick="deleteTransaksi({{ $item->id_transaksi }})">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                                 @include('transaksi.modal.edit')
@@ -78,5 +105,106 @@
         </div>
     </div>
 
+
+    @include('transaksi.modal.import')
     @include('transaksi.modal.tambah')
+    @push('script')
+        <script>
+            document.querySelectorAll('.btn-simpan-transaksi').forEach(btn => {
+                btn.addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    let id = this.dataset.id; // ambil id_layanan dari data-id
+
+                    Swal.fire({
+                        title: "Apakah Kamu Yakin Ingin Menyimpan Perubahan?",
+                        showDenyButton: true,
+                        confirmButtonText: "Simpan",
+                        denyButtonText: "Batalkan Perubahan"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire("Tersimpan!", "", "success");
+                            document.getElementById('editTransaksi' + id).submit();
+                        } else if (result.isDenied) {
+                            Swal.fire("Perubahan Tidak Disimpan", "", "info");
+                        }
+                    });
+                });
+            });
+        </script>
+        <script>
+            function deleteTransaksi(id) {
+                Swal.fire({
+                    title: 'Apakah kamu yakin?',
+                    text: "Data ini akan dihapus dan tidak bisa dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Hapus',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('deleteTransaksi' + id).submit();
+                    }
+                });
+            }
+        </script>
+        <script>
+            let index = 1;
+            document.getElementById('tambah-layanan').addEventListener('click', function() {
+                let wrapper = document.getElementById('layanan_multiple');
+                let newItem = document.querySelector('.layanan-item').cloneNode(true);
+
+                // ganti name sesuai index
+                newItem.querySelector('select').setAttribute('name', `layanan[${index}][id_layanan]`);
+                newItem.querySelector('input').setAttribute('name', `layanan[${index}][berat]`);
+                wrapper.appendChild(newItem);
+                index++;
+            });
+        </script>
+        <script>
+            document.getElementById('simpanTransaksi').addEventListener('click', function(event) {
+                event.preventDefault(); // stop submit form dulu
+
+                Swal.fire({
+                    title: 'Apakah Anda yakin?',
+                    text: "Pastikan semua data sudah benar sebelum disimpan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Simpan!',
+                    cancelButtonText: 'Batal',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('formTransaksi').submit(); // submit manual
+                    }
+                });
+            });
+        </script>
+    @endpush
+    @push('script')
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                let indexEdit{{ $item->id_transaksi }} = {{ count($detail) }};
+                document.getElementById("tambah-layanan-edit{{ $item->id_transaksi }}").addEventListener("click",
+                    function() {
+                        let wrapper = document.getElementById(
+                            "layanan_multiple_edit{{ $item->id_transaksi }}");
+                        let newItem = wrapper.querySelector(".layanan-item").cloneNode(true);
+
+                        // reset value
+                        newItem.querySelector("select").value = "";
+                        newItem.querySelector("input").value = "";
+
+                        newItem.querySelector("select").setAttribute("name",
+                            `layanan[${indexEdit{{ $item->id_transaksi }}}][id_layanan]`);
+                        newItem.querySelector("input").setAttribute("name",
+                            `layanan[${indexEdit{{ $item->id_transaksi }}}][berat]`);
+
+                        wrapper.appendChild(newItem);
+                        indexEdit{{ $item->id_transaksi }}++;
+                    });
+            });
+        </script>
+    @endpush
 @endsection
