@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\LayananExport;
 use App\Imports\LayananImport;
 use App\Models\Layanan;
 use Illuminate\Http\Request;
@@ -72,5 +73,10 @@ class LayananController extends Controller
         Excel::import(new LayananImport, $request->file('file'));
 
         return redirect()->back()->with('success', 'Data layanan berhasil diimport!');
+    }
+    public function exportExcel()
+    {
+        // Nama file: produk.xlsx
+        return Excel::download(new LayananExport, 'DataLayanan.xlsx');
     }
 }

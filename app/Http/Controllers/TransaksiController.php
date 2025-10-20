@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\TransaksiDetailExport;
+use App\Exports\TransaksiExport;
 use App\Imports\TransaksiImport;
 use App\Models\Transaksi;
 use App\Models\TransaksiDetail;
@@ -26,6 +28,7 @@ class TransaksiController extends Controller
                 'tb_transaksi.tanggal',
                 DB::raw('SUM(tb_layanan.harga_satuan * tb_detailTransaksi.berat) as total')
             )
+            // ->where('tb_transaksi.status', '=', 'Belum Diambil')
             ->groupBy('tb_transaksi.id_transaksi', 'tb_transaksi.status', 'tb_transaksi.nama_pelanggan',)
             ->get();
 
@@ -39,6 +42,7 @@ class TransaksiController extends Controller
                 'tb_detailTransaksi.berat'
             )
             ->orderBy('tb_transaksi.id_transaksi')
+            // ->where('tb_transaksi.status', '=', 'Belum Diambil')
             ->get()
             ->groupBy('id_transaksi');
 
@@ -47,17 +51,6 @@ class TransaksiController extends Controller
         return view('transaksi.index', compact('transaksi', 'layanan', 'detail'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         // $transaksi = Transaksi::create([
@@ -87,39 +80,6 @@ class TransaksiController extends Controller
             ->route('transaksi')
             ->with('success', 'Data Transaksi Berhasil Ditambahkan');
     }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    // public function update(Request $request, string $id)
-    // {
-    //     $transaksi = Transaksi::find($id);
-    //     $transaksi->update([
-    //         'tanggal' => $request->tanggal,
-    //         'id_layanan' => $request->id_layanan,
-    //         'berat' => $request->berat,
-    //         'nama_pelanggan' => $request->nama_pelanggan,
-    //         'status' => $request->status,
-    //     ]);
-
-    //     return redirect()->route('transaksi')->with('success', 'Data Transaksi Berhasil DiRubah');
-    // }
     public function update(Request $request, $id)
     {
         $transaksi = Transaksi::findOrFail($id);
@@ -164,5 +124,31 @@ class TransaksiController extends Controller
         Excel::import(new TransaksiImport, $request->file('file'));
 
         return redirect()->back()->with('success', 'Data layanan berhasil diimport!');
+    }
+    public function exportExcel()
+    {
+        // Nama file: produk.xlsx
+        return Excel::download(new TransaksiDetailExport(), 'DataTransaksi.xlsx');
+    }
+    public function cetak($id)
+    {
+        $transaksi = DB::table('tb_transaksi')
+            ->where('tb_transaksi.id_transaksi', $id)
+            ->first();
+
+        $detail = DB::table('tb_detailTransaksi')
+            ->join('tb_layanan', 'tb_detailTransaksi.id_layanan', '=', 'tb_layanan.id_layanan')
+            ->where('tb_detailTransaksi.id_transaksi', $id)
+            ->select(
+                'tb_layanan.nama_layanan',
+                'tb_detailTransaksi.berat',
+                'tb_layanan.harga_satuan',
+                DB::raw('(tb_detailTransaksi.berat * tb_layanan.harga_satuan) as subtotal')
+            )
+            ->get();
+
+        $total = $detail->sum('subtotal');
+
+        return view('transaksi.struk', compact('transaksi', 'detail', 'total'));
     }
 }

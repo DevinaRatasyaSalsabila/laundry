@@ -36,9 +36,27 @@ class BerandaController extends Controller
         //     ->select(DB::raw('SUM(tb_transaksi.berat * tb_layanan.harga_satuan) as total_pendapatan'))
         //     ->value('total_pendapatan');
 
+        $layananTerlaris = DB::table('tb_detailTransaksi')
+            ->join('tb_layanan', 'tb_detailTransaksi.id_layanan', '=', 'tb_layanan.id_layanan')
+            ->select(
+                'tb_layanan.nama_layanan',
+                DB::raw('COUNT(tb_detailTransaksi.id_layanan) as total_dibeli')
+            )
+            ->groupBy('tb_layanan.nama_layanan')
+            ->orderByDesc('total_dibeli')
+            ->get();
+
+        $pendapatanHariIni = DB::table('tb_transaksi')
+            ->join('tb_detailTransaksi', 'tb_transaksi.id_transaksi', '=', 'tb_detailTransaksi.id_transaksi')
+            ->join('tb_layanan', 'tb_detailTransaksi.id_layanan', '=', 'tb_layanan.id_layanan')
+            ->where('tb_transaksi.tanggal', 'LIKE', Carbon::today()->format('%Y-%m-%d') . '%')
+            // hanya ambil transaksi hari ini
+            ->select(DB::raw('SUM(tb_layanan.harga_satuan * tb_detailTransaksi.berat) as total_pendapatan'))
+            ->value('total_pendapatan');
+
         return view(
             'beranda.index',
-            compact('transaksi', 'jumlahLayanan', 'jumlahTransaksi', 'belumDiambil')
+            compact('transaksi', 'jumlahLayanan', 'jumlahTransaksi', 'belumDiambil', 'layananTerlaris', 'pendapatanHariIni')
         );
     }
 

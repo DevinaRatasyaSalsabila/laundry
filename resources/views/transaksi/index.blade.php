@@ -11,15 +11,21 @@
         <div class="card shadow mb-4">
             <div class="card-header py-3  d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-primary">Daftar Transaksi</h6>
-                <div class="col-auto">
-                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#transaksiTambah">
+                <div class="col-auto d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-success btn-sm m-1" data-toggle="modal"
+                        data-target="#transaksiTambah">
                         <i class="bi bi-file-earmark-plus"></i>
                     </button>
                     <!-- Tombol Import -->
-                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#importModal">
+                    <button type="button" class="btn btn-secondary btn-sm m-1" data-toggle="modal"
+                        data-target="#importModal">
                         <i class="fa fa-download"></i>
-                        Import
                     </button>
+                    <button type="button" class="btn btn-primary btn-sm m-1" data-toggle="modal"
+                        data-target="#exportModal">
+                        <i class="fa fa-upload"></i>
+                    </button>
+
                 </div>
             </div>
             <div class="card-body">
@@ -85,6 +91,10 @@
                                             data-target="#transaksiEdit{{ $item->id_transaksi }}">
                                             <i class="bi bi-pen"></i>
                                         </button>
+                                        <a href="{{ route('transaksi.cetak', $item->id_transaksi) }}" target="_blank"
+                                            class="btn btn-sm btn-primary m-1">
+                                            <i class="fa fa-print"></i>
+                                        </a>
                                         <form action="{{ route('transaksiDestroy', $item->id_transaksi) }}" method="POST"
                                             id="deleteTransaksi{{ $item->id_transaksi }}">
                                             @csrf
@@ -97,6 +107,31 @@
                                     </td>
                                 </tr>
                                 @include('transaksi.modal.edit')
+                                @push('script')
+                                    <script>
+                                        document.addEventListener("DOMContentLoaded", function() {
+                                            let indexEdit{{ $item->id_transaksi }} = {{ count($detail) }};
+                                            document.getElementById("tambah-layanan-edit{{ $item->id_transaksi }}").addEventListener("click",
+                                                function() {
+                                                    let wrapper = document.getElementById(
+                                                        "layanan_multiple_edit{{ $item->id_transaksi }}");
+                                                    let newItem = wrapper.querySelector(".layanan-item").cloneNode(true);
+
+                                                    // reset value
+                                                    newItem.querySelector("select").value = "";
+                                                    newItem.querySelector("input").value = "";
+
+                                                    newItem.querySelector("select").setAttribute("name",
+                                                        `layanan[${indexEdit{{ $item->id_transaksi }}}][id_layanan]`);
+                                                    newItem.querySelector("input").setAttribute("name",
+                                                        `layanan[${indexEdit{{ $item->id_transaksi }}}][berat]`);
+
+                                                    wrapper.appendChild(newItem);
+                                                    indexEdit{{ $item->id_transaksi }}++;
+                                                });
+                                        });
+                                    </script>
+                                @endpush
                             @endforeach
                         </tbody>
                     </table>
@@ -105,7 +140,7 @@
         </div>
     </div>
 
-
+    @include('transaksi.modal.export')
     @include('transaksi.modal.import')
     @include('transaksi.modal.tambah')
     @push('script')
@@ -179,31 +214,6 @@
                         document.getElementById('formTransaksi').submit(); // submit manual
                     }
                 });
-            });
-        </script>
-    @endpush
-    @push('script')
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                let indexEdit{{ $item->id_transaksi }} = {{ count($detail) }};
-                document.getElementById("tambah-layanan-edit{{ $item->id_transaksi }}").addEventListener("click",
-                    function() {
-                        let wrapper = document.getElementById(
-                            "layanan_multiple_edit{{ $item->id_transaksi }}");
-                        let newItem = wrapper.querySelector(".layanan-item").cloneNode(true);
-
-                        // reset value
-                        newItem.querySelector("select").value = "";
-                        newItem.querySelector("input").value = "";
-
-                        newItem.querySelector("select").setAttribute("name",
-                            `layanan[${indexEdit{{ $item->id_transaksi }}}][id_layanan]`);
-                        newItem.querySelector("input").setAttribute("name",
-                            `layanan[${indexEdit{{ $item->id_transaksi }}}][berat]`);
-
-                        wrapper.appendChild(newItem);
-                        indexEdit{{ $item->id_transaksi }}++;
-                    });
             });
         </script>
     @endpush

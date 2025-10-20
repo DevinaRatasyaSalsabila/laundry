@@ -9,4 +9,5 @@ class Layanan extends Model
     protected $table = 'tb_layanan';
     protected $primaryKey = 'id_layanan';
     protected $guarded = [];
+    public $timestamps = true;
 }

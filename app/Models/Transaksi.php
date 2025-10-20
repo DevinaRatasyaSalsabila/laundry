@@ -9,4 +9,5 @@ class Transaksi extends Model
     protected $table = 'tb_transaksi';
     protected $primaryKey = 'id_transaksi';
     protected $guarded = [];
+    public $timestamps = true;
 }

@@ -13,17 +13,22 @@
         <div class="card shadow mb-4">
             <div class="card-header py-3  d-flex justify-content-between align-items-center">
                 <h6 class="m-0 font-weight-bold text-primary">Daftar Layanan</h6>
-                <div class="col-auto">
-                    <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#layananTambah">
+                <div class="col-auto d-flex align-items-center gap-2">
+                    <!-- Tombol Tambah -->
+                    <button type="button" class="btn btn-success btn-sm m-1" data-toggle="modal" data-target="#layananTambah">
                         <i class="bi bi-file-earmark-plus"></i>
                     </button>
 
                     <!-- Tombol Import -->
-                    <button type="button" class="btn btn-secondary btn-sm" data-toggle="modal" data-target="#importModal">
+                    <button type="button" class="btn btn-secondary btn-sm m-1" data-toggle="modal"
+                        data-target="#importModal">
                         <i class="fa fa-download"></i>
-                        Import
                     </button>
 
+                    <button type="button" class="btn btn-primary btn-sm m-1" data-toggle="modal"
+                        data-target="#exportModal">
+                        <i class="fa fa-upload"></i>
+                    </button>
                 </div>
             </div>
             <div class="card-body">
@@ -79,6 +84,7 @@
         </div>
     </div>
 
+    @include('layanan.modal.export')
     @include('layanan.modal.tambah')
     @include('layanan.modal.import')
 

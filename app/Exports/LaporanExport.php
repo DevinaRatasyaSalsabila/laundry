@@ -1,18 +1,21 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Exports;
 
-use App\Exports\LaporanExport;
-use Illuminate\Http\Request;
+use App\Models\Layanan;
+use App\Models\Produk;
 use Illuminate\Support\Facades\DB;
-use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class LaporanController extends Controller
+class LaporanExport implements FromCollection, WithHeadings
 {
-
-    public function index()
+    /**
+     * Ambil semua data produk dari DB
+     */
+    public function collection()
     {
-        $laporan = DB::table('tb_transaksi')
+        return DB::table('tb_transaksi')
             ->join('tb_detailTransaksi', 'tb_transaksi.id_transaksi', '=', 'tb_detailTransaksi.id_transaksi')
             ->join('tb_layanan', 'tb_detailTransaksi.id_layanan', '=', 'tb_layanan.id_layanan')
             ->select(
@@ -24,12 +27,17 @@ class LaporanController extends Controller
             ->groupBy('tb_transaksi.tanggal')
             ->orderBy('tb_transaksi.tanggal', 'asc')
             ->get();
-
-        return view('laporan.index', compact('laporan'));
     }
-    public function exportExcel()
+
+    /**
+     * Judul kolom di file Excel
+     */
+    public function headings(): array
     {
-        // Nama file: produk.xlsx
-        return Excel::download(new LaporanExport(), 'LaporanPendapatan.xlsx');
+        return [
+            'Tanggal',
+            'Jumlah Transaksi',
+            'Total Pendapatan'
+        ];
     }
 }
