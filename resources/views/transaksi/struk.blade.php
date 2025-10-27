@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cetak Struk - SiLaundry</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        rel="stylesheet">
 
     <style>
         @page {
@@ -19,7 +21,7 @@
             margin: 0 auto;
             background: #fff;
             font-size: 11px;
-            font-family: 'Courier New', monospace;
+            font-family: 'Consolas', 'Lucida Console', 'DejaVu Sans Mono', monospace;
         }
 
         .container-struk {
@@ -97,7 +99,8 @@
         <!-- Info Transaksi -->
         <div class="text-start info-transaksi mb-2">
             <p><strong>Nama:</strong> {{ $transaksi->nama_pelanggan }}</p>
-            <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($transaksi->tanggal)->format('d M Y') }}</p>
+            <p><strong>Tanggal:</strong>
+                {{ \Carbon\Carbon::parse($transaksi->tanggal)->format('d M Y') }}</p>
             <p><strong>Status:</strong> {{ $transaksi->status }}</p>
         </div>
 
@@ -141,7 +144,7 @@
 
         <!-- Tombol Print -->
         <button class="btn btn-secondary btn-sm w-100 btn-print mt-2" onclick="window.print()">
-            <i class="bi bi-printer"></i> 
+            <i class="bi bi-printer"></i>
             Cetak Struk
         </button>
     </div>
